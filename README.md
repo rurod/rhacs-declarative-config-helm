@@ -27,7 +27,7 @@ By using this Helm chart, you can:
 
 ### Documentation
 
-Detailed documentation can be found in the docs directory.
+Detailed documentation can be found in the helm directory.
 
 ### Contributing
 
