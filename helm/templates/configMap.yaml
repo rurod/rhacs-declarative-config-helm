@@ -1,0 +1,37 @@
+{{ if .Values.general.configMap.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.general.configMap.name | default "rhacs-declarative-config" }}
+data:
+  {{- range .Values.auth_providers }}
+  {{- if eq (.destination | default $.Values.general.defaultDestination) "ConfigMap" }}
+  {{ .name }}.yaml: | 
+    {{- include "rhacs-declarative-config-helm.auth_provider" . | indent 4 }}
+  {{- end }}
+  {{- end }}
+  {{- range .Values.access_scopes }}
+  {{- if eq (.destination | default $.Values.general.defaultDestination) "ConfigMap" }}
+  {{ .name }}.yaml: | 
+    {{- include "rhacs-declarative-config-helm.access_scope" . | indent 4 }}
+  {{- end }}
+  {{- end }}
+  {{- range .Values.permission_sets }}
+  {{- if eq (.destination | default $.Values.general.defaultDestination) "ConfigMap" }}
+  {{ .name }}.yaml: | 
+    {{- include "rhacs-declarative-config-helm.permission_set" . | indent 4 }}
+  {{- end }}
+  {{- end }}
+  {{- range .Values.roles }}
+  {{- if eq (.destination | default $.Values.general.defaultDestination) "ConfigMap" }}
+  {{ .name }}.yaml: | 
+    {{- include "rhacs-declarative-config-helm.role" . | indent 4 }}
+  {{- end }}
+  {{- end }}
+  {{- range .Values.notifiers }}
+  {{- if eq (.destination | default $.Values.general.defaultDestination) "ConfigMap" }}
+  {{ .name }}.yaml: | 
+    {{- include "rhacs-declarative-config-helm.notifier" . | indent 4 }}
+  {{- end }}
+  {{- end }}
+{{- end }}

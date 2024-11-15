@@ -1,0 +1,197 @@
+# Define general settings for the generated yaml
+general:
+  # -- Sets the default destination of the generated configurations
+  # Can be ConfigMap or Secret
+  defaultDestination: ConfigMap
+  # -- ConfigMap options
+  configMap:
+    # -- Enable ConfigMap generation
+    enabled: true
+    # -- Define generated ConfigMap name
+    name: rhacs-declarative-config-cm
+  # -- Secret options
+  secret:
+    # -- Enable Secret generation
+    enabled: true
+    # -- Define generated Secret name
+    name: rhacs-declarative-config-secret
+
+# Authentication providers definition
+auth_providers:
+  - # -- Authentication provider name
+    name: auth-prov
+    # -- Sets the destination of the auth provider configuration. Can be ConfigMap or Secret.
+    destination: ConfigMap
+    # -- UI Endpoint from which the auth provider is used (this is typically the public endpoint where RHACS is exposed).
+    uiEndpoint: endpoint.local:443
+    # -- Additional RHACS UI endpoints from which the auth provider is used.
+    extraUIEndpoints: {}
+    # -- Role of the groups to add within the auth provider.
+    groups:
+        - # -- Key can be userid, name, email or group 
+          key: userid
+          # -- Value must be the userid, the name, the email or the group name.
+          value: admin
+          # -- Role must be the role associated to this group
+          role: view 
+    # -- Minimum role of the auth provider.
+    minimumRole: view
+    # -- Required attributes from the auth provider
+    requiredAttributes:
+        - key: foo
+          value: bar
+    iap:
+    #    # -- Audience that should be validated
+    #    audience: "group"
+    oidc:
+    #    # -- Issuer of the OIDC client
+    #    issuer: issuer
+    #    # -- The callback mode to use. Possible vlaues are : auto, post, query, fragment.
+    #    mode: auto
+    #    # -- Client ID of the OIDC client
+    #    clientID: client-id
+    #    # -- Client Secret of the OIDC client
+    #    clientSecret: client-secret
+    #    # -- Disable requesting the scope offline_access from the OIDC identity provider.
+    #    disableOfflineAccessScope: false
+    ### -- List of non-standard claims from the IdP token that should be available within auth provider rules. Only applicable for OIDC authentication.
+    claimMappings:
+    #    - path: claim
+    #      name: claim_token
+    openshift:
+        # -- Toggle on/off the OpenShift Auth integration
+        enable: true
+    saml:
+    #    # -- Service provider issuer
+    #    spIssuer: sp-issuer
+    #    # -- Metadata URL of the service provider
+    #    metadataURL: https://metadata.url.local
+    #    # -- SAML IdP certificate in PEM format
+    #    cert: |+
+    #        -----BEGIN CERTIFICATE-----
+    #        ...
+    #        -----END CERTIFICATE----- 
+    #    # -- URL of the IdP
+    #    ssoURL: https://sso.url.local
+    #    # -- Name ID format
+    #    nameIdFormat: nameIdFormat
+    #    # -- Issuer of the IdP
+    #    idpIssuer: issuer
+    # -- User PKI specific options
+    userpki:
+    #    # -- Certificate authorities in PEM format
+    #    certificateAuthorities: |+
+    #       -----BEGIN CERTIFICATE-----
+    #       ...
+    #       -----END CERTIFICATE-----
+
+# Access scopes definition
+access_scopes:
+  - # -- Name of the Access Scope
+    name: access-scope
+    # -- Sets the destination of the Access Scope configuration. Can be ConfigMap or Secret.
+    destination: ConfigMap
+    # -- Description of the Access Scope
+    description: "Access Scope"
+    # -- List of clusters and their namespaces that should be included within the Access Scope
+    included:
+        - cluster: local-cluster
+          namespaces:
+            - namespaceA
+            - namespaceB
+    clusterLabelSelectors:
+        - requirements:
+            # -- Label selectors to select clusters that must be included within the Access Scope
+            - key: custom-label
+              operator: IN
+              values:
+                - A
+                - B
+                - C
+    namespaceLabelSelectors:
+        - requirements:
+            # -- Label selectors to select namespaces that must be included within the Access Scope
+            - key: custom-label
+              operator: IN
+              values:
+                - A
+                - B
+                - C
+
+### Permission sets definition
+permission_sets:
+  - # -- Name of the Permission Set 
+    name: permission-set
+    # -- Sets the destination of the Permission Set configuration. Can be ConfigMap or Secret.
+    destination: ConfigMap
+    # -- Description of the Permission Set
+    description: "Permission Set"
+    # -- List of resources with the respective access
+    resources:
+      - resource: Access
+        access: READ_ACCESS
+      - resource: Administration
+        access: READ_WRITE_ACCESS
+
+### Roles definition
+roles:
+  - # -- Name of the Role
+    name: "view"
+    # -- Sets the destination of the Role configuration. Can be ConfigMap or Secret.
+    destination: ConfigMap
+    # -- Description of the Role
+    description: "view-role"
+    # -- Name of the referenced Access Scope
+    accessScope: access-scope
+    # -- Name of the referenced Permission Set
+    permissionSet: permission-set
+
+### Notifiers definition
+notifiers:
+#  - # -- Name of the Notifier
+#    name: generic
+#    # -- Sets the destination of the notifier configuration. Can be ConfigMap or Secret.
+#    destination: Secret
+#    generic:
+#        # -- Webhook endpoint URL
+#        endpoint: https://endpoint.local
+#        # -- Skip webhook TLS Verify
+#        skipTLSVerify: false
+#        # @ignored CA certificate in pem format
+#        #caCertPem: !!binary |
+#        #  entry
+#        # -- Username for the webhook endpoint basic authentication
+#        username: username
+#        # -- Password for the webhook endpoint basic authentication
+#        password: password
+#        # -- Webhook Headers
+#        headers:
+#            - key: foo
+#              value: bar
+#        # -- Webhook extraFields
+#        extraFields:
+#            - key: foo
+#              value: bar
+#        # -- Enable or disable sending auditLogging to this webhook
+#        auditLoggingEnabled: true
+#  - # @ignored -- Name of the Notifier
+#    name: splunk
+#    # -- Sets the destination of the notifier configuration. Can be ConfigMap or Secret.
+#    destination: ConfigMap
+#    splunk:
+#        # -- Splunk token
+#        token: token
+#        # -- Splunk endpoint
+#        endpoint: https://splunk.local
+#        # -- Skip Splunk server TLS Verify
+#        skipTLSVerify: false
+#        # -- Enable or disable sending auditLogging to this Webhook
+#        auditLoggingEnabled: true
+#        # -- Splunk HEC truncate limit
+#        hecTruncateLimit: 1000
+#        # -- Splunk Source types
+#        sourceTypes:
+#          - key: alert
+#            sourceType: rhacs
+#          - key: audit
+#            sourceType: rhacs
